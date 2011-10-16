@@ -21,3 +21,7 @@ phrases which are easier to remember/visualise than 4 completely random words as
     >>> from pass_phrase import pass_phrase
     >>> pass_phrase()
     'powerful eye swing wasteful town'
+
+## License
+
+MIT: http://aaron.mit-license.org

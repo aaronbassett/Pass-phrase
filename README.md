@@ -68,6 +68,10 @@ If you want to use other files, or relocate them, use the command line options.
       -V, --verbose         Report various metrics for given options
 
 
+## Thanks
+
+Thanks to Steven Tobin and his version of the [XKCD-password-generator](https://github.com/redacted/XKCD-password-generator), it inspired me to add some additional features to my own version. I've also used bits & pieces of the code from XKCD-password-generator here.
+
 ## License
 
 MIT: http://aaron.mit-license.org

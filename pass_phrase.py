@@ -129,13 +129,39 @@ def leet(word):
         geek_word = geek_word[:-1] + "zz"
     
     return geek_word
+    
+
+def mini_leet(word):
+    geek_letters = {
+        "a": "4",
+        "b": "8",
+        "e": "3",
+        "g": "6",
+        "i": "1",
+        "o": "0",
+        "s": "5",
+        "t": "7",
+        "z": "2",
+    }
+    
+    geek_word = ""
+    
+    for letter in word:
+        l = letter.lower()
+        if l in geek_letters:
+            letter = geek_letters[l]
+        
+        geek_word += letter
+    
+    return geek_word
 
 
 def generate_wordlist(wordfile=None,
                       min_length=0,
                       max_length=20,
                       valid_chars='.',
-                      make_leet=False):
+                      make_leet=False,
+                      make_mini_leet=False):
     """
     Generate a word list from either a kwarg wordfile, or a system default
     valid_chars is a regular expression match condition (default - all chars)
@@ -152,7 +178,9 @@ def generate_wordlist(wordfile=None,
     for line in wlf:
         thisword = line.strip()
         if regexp.match(thisword) is not None:
-            if make_leet:
+            if make_mini_leet:
+                thisword = mini_leet(thisword)
+            elif make_leet:
                 thisword = leet(thisword)
 
             words.append(thisword)
@@ -314,6 +342,10 @@ if __name__ == "__main__":
     parser.add_option("--l337", dest="make_leet",
                       default=False, action="store_true",
                       help="7#izz R3@l|j !$ 4941Nst 7#3 w#()|e 5P|R!7 0pH t#3 7#|N6.")
+                      
+    parser.add_option("--l337ish", dest="make_mini_leet",
+                      default=False, action="store_true",
+                      help="A l337 version which is easier to remember.")
 
     parser.add_option("-V", "--verbose", dest="verbose",
                       default=False, action="store_true",
@@ -327,18 +359,21 @@ if __name__ == "__main__":
                               min_length=options.min_length,
                               max_length=options.max_length,
                               valid_chars=options.valid_chars,
+                              make_mini_leet=options.make_mini_leet,
                               make_leet=options.make_leet)
     
     nouns = generate_wordlist(wordfile=options.nouns,
                               min_length=options.min_length,
                               max_length=options.max_length,
                               valid_chars=options.valid_chars,
+                              make_mini_leet=options.make_mini_leet,
                               make_leet=options.make_leet)
     
     verbs = generate_wordlist(wordfile=options.verbs,
                               min_length=options.min_length,
                               max_length=options.max_length,
                               valid_chars=options.valid_chars,
+                              make_mini_leet=options.make_mini_leet,
                               make_leet=options.make_leet)
     
     if options.verbose:

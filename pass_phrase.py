@@ -6,6 +6,8 @@ import optparse
 import sys
 import re
 import os
+import math
+import datetime
 
 __LICENSE__ = """
 The MIT License (MIT)
@@ -118,7 +120,85 @@ def generate_wordlist(wordfile=None,
         sys.exit(1)
 
     return words
+    
 
+def craking_time(seconds):
+    minute = 60
+    hour = minute * 60
+    day = hour * 24
+    week = day * 7
+    
+    if seconds < 60:
+        return "less than a minute"
+    elif seconds < 60 * 5:
+        return "less than 5 minutes"
+    elif seconds < 60 * 10:
+        return "less than 10 minutes"
+    elif seconds < 60 * 60:
+        return "less than an hour"
+    elif seconds < 60 * 60 * 24:
+        hours, r = divmod(seconds, 60 * 60)
+        return "about %i hours" % hours
+    elif seconds < 60 * 60 * 24 * 14:
+        days, r = divmod(seconds, 60 * 60 * 24)
+        return "about %i days" % days
+    elif seconds < 60 * 60 * 24 * 7 * 8:
+        weeks, r = divmod(seconds, 60 * 60 * 24 * 7)
+        return "about %i weeks" % weeks
+    elif seconds < 60 * 60 * 24 * 365 * 2:
+        months, r = divmod(seconds, 60 * 60 * 24 * 7 * 4)
+        return "about %i months" % months
+    else:
+        years, r = divmod(seconds, 60 * 60 * 24 * 365)
+        return "about %i years" % years
+
+
+def verbose_reports(**kwargs):
+    """
+    Report entropy metrics based on word list size"
+    """
+    
+    options = kwargs.pop("options")
+    f = {}
+
+    for word_type in ["adjectives", "nouns", "verbs"]:
+        print("The supplied {word_type} list is located at {loc}.".format(
+            word_type=word_type,
+            loc=os.path.abspath(getattr(options, word_type))
+        ))
+        
+        words = kwargs[word_type]
+        f[word_type] = {}
+        f[word_type]["length"] = len(words)
+        f[word_type]["bits"] = math.log(f[word_type]["length"], 2)
+
+        if (int(f[word_type]["bits"]) == f[word_type]["bits"]):
+            print("Your %s word list contains %i words, or 2^%i words."
+                  % (word_type, f[word_type]["length"], f[word_type]["bits"]))
+        else:
+            print("Your %s word list contains %i words, or 2^%0.2f words."
+                  % (word_type, f[word_type]["length"], f[word_type]["bits"]))
+    
+    entropy = f["adjectives"]["bits"] +\
+              f["nouns"]["bits"] +\
+              f["verbs"]["bits"] +\
+              f["adjectives"]["bits"] +\
+              f["nouns"]["bits"]
+    
+    print("A passphrase from this list will have roughly "
+          "%i (%0.2f + %0.2f + %0.2f + %0.2f + %0.2f) bits of entropy, " % (
+              entropy,
+              f["adjectives"]["bits"],
+              f["nouns"]["bits"],
+              f["verbs"]["bits"],
+              f["adjectives"]["bits"],
+              f["nouns"]["bits"]
+          ))
+
+    combinations = math.pow(2, int(entropy)) / 1000
+    time_taken = craking_time(combinations)
+    
+    print "Estimated time to crack this pass phrase (at 1,000 guesses per second): %s\n" % time_taken
 
 def generate_passphrase(adjectives, nouns, verbs, interactive=False):
     return "{0} {1} {2} {3} {4}".format(
@@ -179,9 +259,9 @@ if __name__ == "__main__":
     parser.add_option("--valid_chars", dest="valid_chars",
                       default='.',
                       help="Valid chars, using regexp style (e.g. '[a-z]')")
-    #parser.add_option("-V", "--verbose", dest="verbose",
-    #                  default=False, action="store_true",
-    #                  help="Report various metrics for given options")
+    parser.add_option("-V", "--verbose", dest="verbose",
+                      default=False, action="store_true",
+                      help="Report various metrics for given options")
     
     (options, args) = parser.parse_args()
     validate_options(options, args)
@@ -202,8 +282,11 @@ if __name__ == "__main__":
                               max_length=options.max_length,
                               valid_chars=options.valid_chars)
     
-    #if options.verbose:
-    #    verbose_reports(len(my_wordlist), options)
+    if options.verbose:
+        verbose_reports(adjectives=adjectives,
+                        nouns=nouns,
+                        verbs=verbs,
+                        options=options)
     
     print(passphrase(
             adjectives,

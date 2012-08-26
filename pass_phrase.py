@@ -8,6 +8,7 @@ import re
 import os
 import math
 import datetime
+import string
 
 __LICENSE__ = """
 The MIT License (MIT)
@@ -285,7 +286,8 @@ def generate_passphrase(adjectives, nouns, verbs, separator):
     )
 
 
-def passphrase(adjectives, nouns, verbs, separator, num=1, uppercase=False):
+def passphrase(adjectives, nouns, verbs, separator, num=1,
+               uppercase=False, lowercase=False, capitalise=False):
     """
     Returns a random pass-phrase made up of
     adjective noun verb adjective noun
@@ -297,12 +299,17 @@ def passphrase(adjectives, nouns, verbs, separator, num=1, uppercase=False):
     phrases = []
 
     for i in range(0, num):
-        phrases.append(generate_passphrase(adjectives, nouns, verbs, separator))
+        phrase = generate_passphrase(adjectives, nouns, verbs, separator)
+        if capitalise:
+            phrase = string.capwords(phrase)
+        phrases.append(phrase)
 
     all_phrases = "\n".join(phrases)
     
     if uppercase:
         all_phrases = all_phrases.upper()
+    elif lowercase:
+        all_phrases = all_phrases.lower()
         
     return all_phrases
 
@@ -344,9 +351,17 @@ if __name__ == "__main__":
                       default='.',
                       help="Valid chars, using regexp style (e.g. '[a-z]')")
     
-    parser.add_option("-U", "--upper", dest="uppercase",
+    parser.add_option("-U", "--uppercase", dest="uppercase",
                       default=False, action="store_true",
                       help="Force passphrase into uppercase")
+    
+    parser.add_option("-L", "--lowercase", dest="lowercase",
+                      default=False, action="store_true",
+                      help="Force passphrase into lowercase")
+    
+    parser.add_option("-C", "--capitalise", "--capitalize", dest="capitalise",
+                      default=False, action="store_true",
+                      help="Force passphrase to capitalise each word")
     
     parser.add_option("--l337", dest="make_leet",
                       default=False, action="store_true",
@@ -397,6 +412,8 @@ if __name__ == "__main__":
             verbs,
             options.separator,
             num=int(options.num),
-            uppercase=options.uppercase
+            uppercase=options.uppercase,
+            lowercase=options.lowercase,
+            capitalise=options.capitalise
         )
     )

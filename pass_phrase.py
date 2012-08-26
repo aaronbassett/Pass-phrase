@@ -89,10 +89,53 @@ def validate_options(options, args):
             sys.exit(1)
 
 
+def leet(word):
+    geek_letters = {
+        "a": ["4", "@"],
+        "b": ["8",],
+        "c": ["(",],
+        "e": ["3",],
+        "f": ["ph", "pH"],
+        "g": ["9", "6"],
+        "h": ["#",],
+        "i": ["1", "!", "|"],
+        "l": ["!", "|"],
+        "o": ["0", "()"],
+        "q": ["kw",],
+        "s": ["5", "$"],
+        "t": ["7",],
+        "x": ["><",],
+        "y": ["j",],
+        "z": ["2",]
+    }
+    
+    geek_word = ""
+    
+    for letter in word:
+        l = letter.lower()
+        if l in geek_letters:
+            # swap out the letter *most* (80%) of the time
+            if rng().randint(1,5) % 5 != 0:
+                letter = rng().choice(geek_letters[l])
+        else:
+            # uppercase it *some* (10%) of the time
+            if rng().randint(1,10) % 10 != 0:
+                letter = letter.upper()
+        
+        geek_word += letter
+    
+    # if last letter is an S swap it out half the time
+    if word[-1:].lower() == "s" and rng().randint(1,2) % 2 == 0:
+        geek_word = geek_word[:-1] + "zz"
+    
+    return geek_word
+
+
 def generate_wordlist(wordfile=None,
                       min_length=0,
                       max_length=20,
-                      valid_chars='.'):
+                      valid_chars='.',
+                      make_leet=False):
     """
     Generate a word list from either a kwarg wordfile, or a system default
     valid_chars is a regular expression match condition (default - all chars)
@@ -109,6 +152,9 @@ def generate_wordlist(wordfile=None,
     for line in wlf:
         thisword = line.strip()
         if regexp.match(thisword) is not None:
+            if make_leet:
+                thisword = leet(thisword)
+
             words.append(thisword)
 
     wlf.close()
@@ -264,6 +310,10 @@ if __name__ == "__main__":
     parser.add_option("--valid_chars", dest="valid_chars",
                       default='.',
                       help="Valid chars, using regexp style (e.g. '[a-z]')")
+    
+    parser.add_option("--l337", dest="make_leet",
+                      default=False, action="store_true",
+                      help="7#izz R3@l|j !$ 4941Nst 7#3 w#()|e 5P|R!7 0pH t#3 7#|N6.")
 
     parser.add_option("-V", "--verbose", dest="verbose",
                       default=False, action="store_true",
@@ -276,17 +326,20 @@ if __name__ == "__main__":
     adjectives = generate_wordlist(wordfile=options.adjectives,
                               min_length=options.min_length,
                               max_length=options.max_length,
-                              valid_chars=options.valid_chars)
+                              valid_chars=options.valid_chars,
+                              make_leet=options.make_leet)
     
     nouns = generate_wordlist(wordfile=options.nouns,
                               min_length=options.min_length,
                               max_length=options.max_length,
-                              valid_chars=options.valid_chars)
+                              valid_chars=options.valid_chars,
+                              make_leet=options.make_leet)
     
     verbs = generate_wordlist(wordfile=options.verbs,
                               min_length=options.min_length,
                               max_length=options.max_length,
-                              valid_chars=options.valid_chars)
+                              valid_chars=options.valid_chars,
+                              make_leet=options.make_leet)
     
     if options.verbose:
         verbose_reports(adjectives=adjectives,

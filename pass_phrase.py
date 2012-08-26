@@ -285,7 +285,7 @@ def generate_passphrase(adjectives, nouns, verbs, separator):
     )
 
 
-def passphrase(adjectives, nouns, verbs, separator, num=1):
+def passphrase(adjectives, nouns, verbs, separator, num=1, uppercase=False):
     """
     Returns a random pass-phrase made up of
     adjective noun verb adjective noun
@@ -299,7 +299,12 @@ def passphrase(adjectives, nouns, verbs, separator, num=1):
     for i in range(0, num):
         phrases.append(generate_passphrase(adjectives, nouns, verbs, separator))
 
-    return "\n".join(phrases)
+    all_phrases = "\n".join(phrases)
+    
+    if uppercase:
+        all_phrases = all_phrases.upper()
+        
+    return all_phrases
 
 
 if __name__ == "__main__":
@@ -338,6 +343,10 @@ if __name__ == "__main__":
     parser.add_option("--valid_chars", dest="valid_chars",
                       default='.',
                       help="Valid chars, using regexp style (e.g. '[a-z]')")
+    
+    parser.add_option("-U", "--upper", dest="uppercase",
+                      default=False, action="store_true",
+                      help="Force pass phrase into uppercase")
     
     parser.add_option("--l337", dest="make_leet",
                       default=False, action="store_true",
@@ -387,6 +396,7 @@ if __name__ == "__main__":
             nouns,
             verbs,
             options.separator,
-            num=int(options.num)
+            num=int(options.num),
+            uppercase=options.uppercase
         )
     )

@@ -57,7 +57,7 @@ def validate_options(options, args):
     
     if options.num <= 0:
         sys.stderr.write("Little point running the script if you "
-                         "don't generate even a single pass phrase.\n")
+                         "don't generate even a single passphrase.\n")
         sys.exit(1)
 
     if options.max_length < options.min_length:
@@ -272,7 +272,7 @@ def verbose_reports(**kwargs):
     combinations = math.pow(2, int(entropy)) / 1000
     time_taken = craking_time(combinations)
     
-    print "Estimated time to crack this pass phrase (at 1,000 guesses per second): %s\n" % time_taken
+    print "Estimated time to crack this passphrase (at 1,000 guesses per second): %s\n" % time_taken
 
 def generate_passphrase(adjectives, nouns, verbs, separator):
     return "{0}{s}{1}{s}{2}{s}{3}{s}{4}".format(
@@ -314,15 +314,15 @@ if __name__ == "__main__":
     
     parser.add_option("--adjectives", dest="adjectives",
                       default=None,
-                      help="List of valid adjectives for password")
+                      help="List of valid adjectives for passphrase")
                       
     parser.add_option("--nouns", dest="nouns",
                       default=None,
-                      help="List of valid nouns for password")
+                      help="List of valid nouns for passphrase")
                       
     parser.add_option("--verbs", dest="verbs",
                       default=None,
-                      help="List of valid verbs for password")
+                      help="List of valid verbs for passphrase")
     
     parser.add_option("-s", "--separator", dest="separator",
                       default=' ',
@@ -346,7 +346,7 @@ if __name__ == "__main__":
     
     parser.add_option("-U", "--upper", dest="uppercase",
                       default=False, action="store_true",
-                      help="Force pass phrase into uppercase")
+                      help="Force passphrase into uppercase")
     
     parser.add_option("--l337", dest="make_leet",
                       default=False, action="store_true",

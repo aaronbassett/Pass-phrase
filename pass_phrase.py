@@ -200,17 +200,18 @@ def verbose_reports(**kwargs):
     
     print "Estimated time to crack this pass phrase (at 1,000 guesses per second): %s\n" % time_taken
 
-def generate_passphrase(adjectives, nouns, verbs, interactive=False):
-    return "{0} {1} {2} {3} {4}".format(
+def generate_passphrase(adjectives, nouns, verbs, separator):
+    return "{0}{s}{1}{s}{2}{s}{3}{s}{4}".format(
         rng().choice(adjectives),
         rng().choice(nouns),
         rng().choice(verbs),
         rng().choice(adjectives),
-        rng().choice(nouns)
+        rng().choice(nouns),
+        s=separator
     )
 
 
-def passphrase(adjectives, nouns, verbs, num=1):
+def passphrase(adjectives, nouns, verbs, separator, num=1):
     """
     Returns a random pass-phrase made up of
     adjective noun verb adjective noun
@@ -222,7 +223,7 @@ def passphrase(adjectives, nouns, verbs, num=1):
     phrases = []
 
     for i in range(0, num):
-        phrases.append(generate_passphrase(adjectives, nouns, verbs))
+        phrases.append(generate_passphrase(adjectives, nouns, verbs, separator))
 
     return "\n".join(phrases)
 
@@ -243,6 +244,10 @@ if __name__ == "__main__":
     parser.add_option("--verbs", dest="verbs",
                       default=None,
                       help="List of valid verbs for password")
+    
+    parser.add_option("-s", "--separator", dest="separator",
+                      default=' ',
+                      help="Separator to add between words")
                       
     parser.add_option("-n", "--num", dest="num",
                       default=1, type="int",
@@ -259,6 +264,7 @@ if __name__ == "__main__":
     parser.add_option("--valid_chars", dest="valid_chars",
                       default='.',
                       help="Valid chars, using regexp style (e.g. '[a-z]')")
+
     parser.add_option("-V", "--verbose", dest="verbose",
                       default=False, action="store_true",
                       help="Report various metrics for given options")
@@ -292,6 +298,7 @@ if __name__ == "__main__":
             adjectives,
             nouns,
             verbs,
+            options.separator,
             num=int(options.num)
         )
     )
